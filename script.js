@@ -1,23 +1,40 @@
-let allTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+let allTasks = [];
 let valueInput = '';
 let input = null;
 let indexEdit = null;
 
-window.onload = init = () => {
+window.onload = async function init() {
   input = document.getElementById('add-task');
   input.addEventListener('change', updateValue);
   input.addEventListener('keyup', updateValue1);
+  const response = await fetch('http://localhost:8000/allTasks', {
+    method: 'GET'
+  });
+  let result = await response.json();
+  allTasks = result.data;
   render();
 }
 
 
-onClickButton = () => {
+onClickButton = async () => {
   if (valueInput.trim()) {
     allTasks.push({
       text: valueInput.trim(),
       isCheck: false
     });
-    localStorage.setItem('tasks', JSON.stringify(allTasks));
+    const response = await fetch('http://localhost:8000/createTask', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify({
+        text: valueInput.trim(),
+        isCheck: false
+      })
+    });
+    let result = await response.json();
+    allTasks = result.data;
     valueInput = '';
     input.value = '';
   }
@@ -67,7 +84,7 @@ render = () => {
       const imageDone = document.createElement('img');
       imageDone.src = 'images/done.png'
       imageDone.onclick = () => {
-        onClickImageDone(item, input.value);
+        onClickImageDone(item, input.value, index);
 
       }
       container.appendChild(imageDone);
@@ -110,15 +127,36 @@ render = () => {
   })
 };
 
-onChangeCheckBox = (index) => {
+onChangeCheckBox = async (index) => {
   allTasks[index].isCheck = !allTasks[index].isCheck;
-  localStorage.setItem('tasks', JSON.stringify(allTasks));
+  const response = await fetch('http://localhost:8000/updateTask', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8',
+      'Access-Control-Allow-Origin': '*'
+    },
+    body: JSON.stringify({
+      text: allTasks[index].text,
+      isCheck: allTasks[index].isCheck,
+      id: allTasks[index].id
+    })
+  });
+  let result = await response.json();
+  allTasks = result.data;
+
   render();
 };
 
-onClickImageClose = (index) => {
-  allTasks.splice(index, 1);
-  localStorage.setItem('tasks', JSON.stringify(allTasks));
+onClickImageClose = async (index) => {
+  const response = await fetch(`http://localhost:8000/deleteTask?id=${allTasks[index].id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8',
+      'Access-Control-Allow-Origin': '*'
+    }
+  });
+  let result = await response.json();
+  allTasks = result.data;
   render();
 };
 
@@ -127,10 +165,24 @@ onClickImageEdit = (index) => {
   render()
 };
 
-onClickImageDone = (item, val) => { // trouble
+onClickImageDone = async (item, val, index) => {
   item.text = val;
   indexEdit = null;
-  localStorage.setItem('tasks', JSON.stringify(allTasks));
+  const response = await fetch('http://localhost:8000/updateTask', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8',
+      'Access-Control-Allow-Origin': '*'
+    },
+    body: JSON.stringify({
+      text: val,
+      isCheck: false,
+      id: allTasks[index].id
+    })
+  });
+  let result = await response.json();
+  console.log(result);
+  allTasks = result.data;
   render();
 }
 
