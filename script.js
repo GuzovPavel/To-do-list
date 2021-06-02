@@ -128,7 +128,12 @@ render = () => {
 };
 
 onChangeCheckBox = async (index) => {
-  allTasks[index].isCheck = !allTasks[index].isCheck;
+  const {
+    text,
+    isCheck,
+    id
+  } = allTasks[index];
+  isCheck = !isCheck;
   const response = await fetch('http://localhost:8000/updateTask', {
     method: 'PATCH',
     headers: {
@@ -136,14 +141,13 @@ onChangeCheckBox = async (index) => {
       'Access-Control-Allow-Origin': '*'
     },
     body: JSON.stringify({
-      text: allTasks[index].text,
-      isCheck: allTasks[index].isCheck,
-      id: allTasks[index].id
+      text,
+      isCheck,
+      id
     })
   });
   let result = await response.json();
   allTasks = result.data;
-
   render();
 };
 
@@ -181,7 +185,6 @@ onClickImageDone = async (item, val, index) => {
     })
   });
   let result = await response.json();
-  console.log(result);
   allTasks = result.data;
   render();
 }
