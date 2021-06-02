@@ -7,7 +7,7 @@ window.onload = async function init() {
   input = document.getElementById('add-task');
   input.addEventListener('change', updateValue);
   input.addEventListener('keyup', updateValue1);
-  const response = await fetch('http://localhost:8000/allTasks', {
+  const response = await fetch('http://localhost:8000/allTask', {
     method: 'GET'
   });
   let result = await response.json();
@@ -15,13 +15,13 @@ window.onload = async function init() {
   render();
 }
 
-
 onClickButton = async () => {
   if (valueInput.trim()) {
     allTasks.push({
       text: valueInput.trim(),
       isCheck: false
     });
+
     const response = await fetch('http://localhost:8000/createTask', {
       method: 'POST',
       headers: {
@@ -34,11 +34,9 @@ onClickButton = async () => {
       })
     });
     let result = await response.json();
-    allTasks = result.data;
     valueInput = '';
     input.value = '';
-  }
-
+  };
   render();
 };
 
@@ -49,9 +47,8 @@ updateValue = (event) => {
 updateValue1 = (event) => {
   if (event.keyCode === 13) {
     return onClickButton();
-  }
-}
-
+  };
+};
 
 render = () => {
   const content = document.getElementById('content-page')
@@ -63,8 +60,6 @@ render = () => {
     container.id = `task-${index}`;
     container.className = 'task-container';
     const checkbox = document.createElement('input');
-
-
 
     checkbox.type = 'checkbox';
     checkbox.className = 'checkbox';
@@ -89,7 +84,6 @@ render = () => {
       }
       container.appendChild(imageDone);
 
-
       const imageBack = document.createElement('img');
       imageBack.src = 'images/back.png'
       imageBack.onclick = () => {
@@ -111,8 +105,6 @@ render = () => {
         container.appendChild(imageEdit);
       }
 
-
-
       const imageClose = document.createElement('img')
       imageClose.src = 'images/delete.png';
       imageClose.onclick = () => {
@@ -131,28 +123,29 @@ onChangeCheckBox = async (index) => {
   const {
     text,
     isCheck,
-    id
+    _id
   } = allTasks[index];
-  isCheck = !isCheck;
-  const response = await fetch('http://localhost:8000/updateTask', {
+
+  const response = await fetch("http://localhost:8000/updateTask", {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json;charset=utf-8',
       'Access-Control-Allow-Origin': '*'
     },
     body: JSON.stringify({
-      text,
-      isCheck,
-      id
+      text: text,
+      isCheck: !isCheck,
+      _id: _id
     })
   });
   let result = await response.json();
   allTasks = result.data;
+
   render();
 };
 
 onClickImageClose = async (index) => {
-  const response = await fetch(`http://localhost:8000/deleteTask?id=${allTasks[index].id}`, {
+  const response = await fetch(`http://localhost:8000/deleteTask?id=${allTasks[index]._id}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json;charset=utf-8',
@@ -181,7 +174,7 @@ onClickImageDone = async (item, val, index) => {
     body: JSON.stringify({
       text: val,
       isCheck: false,
-      id: allTasks[index].id
+      _id: allTasks[index]._id
     })
   });
   let result = await response.json();
@@ -193,4 +186,4 @@ onClickImageBack = (index) => {
   indexEdit = index;
 
   render();
-}
+};
