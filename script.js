@@ -17,7 +17,7 @@ window.onload = async function init() {
 
 onClickButton = async () => {
   if (valueInput.trim()) {
-   
+
     const response = await fetch('http://localhost:8000/createTask', {
       method: 'POST',
       headers: {
@@ -50,6 +50,9 @@ updateValue1 = (event) => {
 
 render = () => {
   const content = document.getElementById('content-page')
+  allTasks.sort((task1, task2) =>
+    task1.isCheck > task2.isCheck ? 1 : task1.isCheck < task2.isCheck ? -1 : 0
+  );
   while (content.firstChild) {
     content.removeChild(content.firstChild);
   }
@@ -66,7 +69,7 @@ render = () => {
       onChangeCheckBox(index);
     };
     container.appendChild(checkbox);
-    
+
     if (index === indexEdit) {
 
       const input = document.createElement('input');
@@ -139,18 +142,17 @@ onChangeCheckBox = async (index) => {
   });
   let result = await response.json();
   allTasks = result.data;
-  console.log("allTasks new", allTasks);
 
   render();
 };
 
 onClickImageClose = async (index) => {
-    const response = await fetch(`http://localhost:8000/deleteTask?_id=${allTasks[index]._id}`, {
-      method: 'DELETE'
-        });
-    let result = await response.json();
-    allTasks = result.data;
-    render();
+  const response = await fetch(`http://localhost:8000/deleteTask?_id=${allTasks[index]._id}`, {
+    method: 'DELETE'
+  });
+  let result = await response.json();
+  allTasks = result.data;
+  render();
 };
 
 onClickImageEdit = (index) => {

@@ -44,12 +44,8 @@ app.post('/createTask', (req, res) => {
 })
 
 app.patch('/updateTask', (req, res) => {
-  Task.updateOne({
-    _id: req.body._id
-  }, {
-    isCheck: req.body.isCheck,
-    text: req.body.text
-  }).then(result => {
+  const {_id} = req.body;
+  Task.updateOne({_id}, req.body).then(result => {
     Task.find().then(result => {
       res.send({
         data: result
@@ -57,6 +53,7 @@ app.patch('/updateTask', (req, res) => {
     })
   })
 })
+
 
 app.delete('/deleteTask', (req, res) => {
   Task.deleteOne(req.query).then(result => {
