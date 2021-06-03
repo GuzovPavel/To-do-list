@@ -18,7 +18,7 @@ window.onload = async function init() {
 onClickButton = async () => {
   if (valueInput.trim()) {
 
-    const response = await fetch('http://localhost:8000/createTask', {
+    const response = await fetch('http://localhost:8000/createNewTask', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
@@ -128,7 +128,7 @@ onChangeCheckBox = async (index) => {
     _id
   } = allTasks[index];
 
-  const response = await fetch("http://localhost:8000/updateTask", {
+  const response = await fetch("http://localhost:8000/changeTask", {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json;charset=utf-8',
@@ -163,7 +163,7 @@ onClickImageEdit = (index) => {
 onClickImageDone = async (item, val, index) => {
   item.text = val;
   indexEdit = null;
-  const response = await fetch('http://localhost:8000/updateTask', {
+  const response = await fetch('http://localhost:8000/changeTask', {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json;charset=utf-8',
