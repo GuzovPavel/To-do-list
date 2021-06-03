@@ -7,7 +7,7 @@ window.onload = async function init() {
   input = document.getElementById('add-task');
   input.addEventListener('change', updateValue);
   input.addEventListener('keyup', updateValue1);
-  const response = await fetch('http://localhost:8000/allTask', {
+  const response = await fetch('http://localhost:8000/allTasks', {
     method: 'GET'
   });
   let result = await response.json();
@@ -17,11 +17,7 @@ window.onload = async function init() {
 
 onClickButton = async () => {
   if (valueInput.trim()) {
-    allTasks.push({
-      text: valueInput.trim(),
-      isCheck: false
-    });
-
+   
     const response = await fetch('http://localhost:8000/createTask', {
       method: 'POST',
       headers: {
@@ -34,6 +30,8 @@ onClickButton = async () => {
       })
     });
     let result = await response.json();
+    allTasks.push(result.data);
+
     valueInput = '';
     input.value = '';
   };
@@ -68,6 +66,7 @@ render = () => {
       onChangeCheckBox(index);
     };
     container.appendChild(checkbox);
+    
     if (index === indexEdit) {
 
       const input = document.createElement('input');
@@ -140,26 +139,23 @@ onChangeCheckBox = async (index) => {
   });
   let result = await response.json();
   allTasks = result.data;
+  console.log("allTasks new", allTasks);
 
   render();
 };
 
 onClickImageClose = async (index) => {
-  const response = await fetch(`http://localhost:8000/deleteTask?id=${allTasks[index]._id}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json;charset=utf-8',
-      'Access-Control-Allow-Origin': '*'
-    }
-  });
-  let result = await response.json();
-  allTasks = result.data;
-  render();
+    const response = await fetch(`http://localhost:8000/deleteTask?_id=${allTasks[index]._id}`, {
+      method: 'DELETE'
+        });
+    let result = await response.json();
+    allTasks = result.data;
+    render();
 };
 
 onClickImageEdit = (index) => {
   indexEdit = index;
-  render()
+  render();
 };
 
 onClickImageDone = async (item, val, index) => {

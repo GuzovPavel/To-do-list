@@ -25,7 +25,7 @@ mongoose.connect(url, {
 
 app.use(express.json());
 
-app.get('/allTask', (req, res) => {
+app.get('/allTasks', (req, res) => {
   Task.find().then(result => {
     res.send({
       data: result
@@ -36,13 +36,20 @@ app.get('/allTask', (req, res) => {
 app.post('/createTask', (req, res) => {
   const task = new Task(req.body);
   task.save().then(result => {
-    res.send({data: result});
+    res.send({
+      data: result
+    });
   })
 
 })
 
 app.patch('/updateTask', (req, res) => {
-  Task.updateOne({_id: req.body._id},{isCheck: req.body.isCheck, text: req.body.text}).then(result => {
+  Task.updateOne({
+    _id: req.body._id
+  }, {
+    isCheck: req.body.isCheck,
+    text: req.body.text
+  }).then(result => {
     Task.find().then(result => {
       res.send({
         data: result
@@ -52,7 +59,7 @@ app.patch('/updateTask', (req, res) => {
 })
 
 app.delete('/deleteTask', (req, res) => {
-  Task.deleteOne(req.body).then(result => {
+  Task.deleteOne(req.query).then(result => {
     Task.find().then(result => {
       res.send({
         data: result
